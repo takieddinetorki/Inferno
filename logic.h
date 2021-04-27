@@ -1,58 +1,71 @@
 #pragma once
 #include <string>
+#include <tuple>
 class Sales;
-class Menu;
+class Drink;
 class Cafe;
-/// <summary>
-/// Sales Class
-///		Handles all of the calculations and the storage unit for the sales
-/// </summary>
 class Sales
 {
 public:
-	Sales() {}
+	void calculateSales(int QUANTITY, int PRICE)
+	{
+		TOTAL_QUANTITY += QUANTITY;
+		TOTAL_SALES = TOTAL_SALES + (QUANTITY * PRICE);
+	}
+	Sales() { TOTAL_QUANTITY = 0; TOTAL_SALES = 0; }
 	~Sales() {}
 
-private:
-
+protected:
+	unsigned int TOTAL_SALES;
+	unsigned int TOTAL_QUANTITY;
 };
-/// <summary>
-/// Menu Class
-///		This class handles everythign regarding the menu which we read from the main funciton
-/// The menu is set via the setMenu() method which COPIES the content. IT DOES NOT SIMPLY POINT
-/// IT COPIES THE WHOLE DATA. Thus, deleteing content** in main is safe.
-/// 
-/// </summary>
-class Menu
+
+class Drink
 {
 public:
 	friend Cafe; 
-	Menu() {}
-	~Menu() {}
-	void setMenu(std::string**& menu, size_t SIZE);
+	Drink() { DRINK_PRICE = 0; QUANTITY = 0; ID = 0; }
+	void setDrink(int ID, std::string NAME, double price, int quantity)
+	{
+		DRINK_PRICE = price;
+		QUANTITY = quantity;
+		this->NAME = NAME;
+		this->ID = ID;
+	}
+	~Drink() {}
 private:
-	std::string** MENU = nullptr;
+	double DRINK_PRICE; int QUANTITY, ID;
+	std::string NAME;
 };
-/// <summary>
-/// Class CAFE.
-///		The "entry" point for our program. It is the middle class between SALES and MENU.
-/// Handles everything from the main function.
-/// </summary>
 class Cafe : public Sales
 {
 public:
-	std::string** getMenu()
+	Drink getDrinkInfo()
 	{
-		return MENU.MENU;
+		return DRINK;
 	}
-	void setMenu(std::string**& menu, size_t SIZE)
+	std::tuple<int, std::string, double, int> getDrink()
 	{
-		MENU.setMenu(menu, SIZE);
+		return std::make_tuple(DRINK.ID, DRINK.NAME, DRINK.DRINK_PRICE, DRINK.QUANTITY);
 	}
-	Cafe();
-	~Cafe();
-
+	void getDrink(std::string*& DRINK_IFNO)
+	{
+		if (DRINK_IFNO == nullptr)
+		{
+			DRINK_IFNO = new std::string[4];
+		}
+		DRINK_IFNO[0] = std::to_string(DRINK.ID);
+		DRINK_IFNO[1] = DRINK.NAME;
+		DRINK_IFNO[2] = std::to_string(DRINK.DRINK_PRICE);
+		DRINK_IFNO[3] = std::to_string(DRINK.QUANTITY);
+	}
+	void setDrink(int ID, std::string NAME, double price, int quantity)
+	{
+		DRINK.setDrink(ID, NAME, price, quantity);
+	}
+	Cafe() : DRINK() {}
+	~Cafe() {}
 private:
-	Menu MENU;
+	Drink DRINK;
 };
 
